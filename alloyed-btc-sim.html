@@ -1,0 +1,560 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Alloyed BTC Protocol Interactive Explainer</title>
+		<script src="https://cdn.tailwindcss.com"></script>
+		<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+			rel="stylesheet"
+		/>
+		<!-- Chosen Palette: Custom - "Foundry" - A mix of warm neutrals with a professional blue and a gold accent (#F5F7FA, #EAECEF, #4A5568, #2D52A0, #D69E2E) -->
+		<!-- Application Structure Plan: The application is structured as a thematic, top-down narrative. It begins with the high-level problem and solution (Introduction), visually explains the user journey (Core Concept), allows hands-on exploration of the core balancing mechanic (Fee Simulator), provides technical depth for interested users (Mathematical Framework), and concludes with supporting components. This structure was chosen to cater to multiple levels of user interest, making the complex protocol digestible by first establishing the 'why' and 'how' interactively, before presenting the dense mathematical 'what'. The simulator is the centerpiece, turning abstract formulas into a tangible cause-and-effect experience. -->
+		<!-- Visualization & Content Choices:
+        - Report Info: Pool composition vs. target. Goal: Compare. Viz/Method: Bar Chart. Interaction: Chart updates based on user simulations. Justification: A bar chart provides the clearest visual comparison between the current and target states of the pool, which is the primary driver of the fee logic. Library: Chart.js (Canvas).
+        - Report Info: User deposit/withdrawal flow. Goal: Organize. Viz/Method: Flowchart diagram. Interaction: Static. Justification: A simple visual flowchart is the most effective way to explain a multi-step process without user interaction, clarifying the path from different BTC types to the unified alloyedBTC. Method: HTML/Tailwind styled divs.
+        - Report Info: Dynamic fee formulas. Goal: Inform. Viz/Method: Formatted text blocks. Interaction: Static. Justification: The mathematical formulas are for reference and deep understanding. Presenting them in a clean, well-structured text format is the most direct and clear method. Method: HTML/Tailwind.
+    -->
+		<!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+		<style>
+			body {
+				font-family: "Inter", sans-serif;
+				background-color: #f5f7fa;
+				color: #4a5568;
+			}
+			.chart-container {
+				position: relative;
+				width: 100%;
+				max-width: 800px;
+				margin-left: auto;
+				margin-right: auto;
+				height: 300px;
+				max-height: 350px;
+			}
+			@media (min-width: 768px) {
+				.chart-container {
+					height: 350px;
+				}
+			}
+			.nav-link {
+				transition: color 0.3s ease;
+			}
+			.nav-link:hover {
+				color: #d69e2e;
+			}
+			.btn-primary {
+				background-color: #2d52a0;
+				transition: background-color 0.3s;
+			}
+			.btn-primary:hover {
+				background-color: #2b4b8a;
+			}
+			.card {
+				background-color: white;
+				border-radius: 0.75rem;
+				box-shadow:
+					0 4px 6px -1px rgb(0 0 0 / 0.1),
+					0 2px 4px -2px rgb(0 0 0 / 0.1);
+			}
+			.formula-card {
+				font-family: "Courier New", Courier, monospace;
+				background-color: #1a202c;
+				color: #a0aec0;
+				padding: 1rem;
+				border-radius: 0.5rem;
+				overflow-x: auto;
+			}
+		</style>
+	</head>
+	<body class="antialiased">
+		<header class="bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+			<nav
+				class="container mx-auto px-6 py-4 flex justify-between items-center"
+			>
+				<h1 class="text-xl font-bold text-gray-800">Alloyed BTC Protocol</h1>
+				<div class="hidden md:flex items-center space-x-8">
+					<a href="#introduction" class="nav-link text-gray-600 font-medium"
+						>Introduction</a
+					>
+					<a href="#simulator" class="nav-link text-gray-600 font-medium"
+						>Simulator</a
+					>
+					<a href="#framework" class="nav-link text-gray-600 font-medium"
+						>Framework</a
+					>
+					<a href="#components" class="nav-link text-gray-600 font-medium"
+						>Components</a
+					>
+				</div>
+			</nav>
+		</header>
+
+		<main class="container mx-auto px-6 py-12">
+			<section id="introduction" class="text-center mb-20">
+				<h2 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4">
+					Unifying Bitcoin Liquidity on Sui
+				</h2>
+				<p class="max-w-3xl mx-auto text-lg text-gray-600">
+					The Alloyed BTC protocol is designed to solve BTC liquidity
+					fragmentation by consolidating multiple synthetic Bitcoin tokens into
+					a single, unified asset. This interactive application explains the
+					core mechanics that power the protocol, focusing on its dynamic fee
+					structure used to maintain a balanced and healthy liquidity pool.
+				</p>
+			</section>
+
+			<section id="concept" class="mb-20">
+				<h3 class="text-3xl font-bold text-center text-gray-900 mb-12">
+					The Core Concept: A Seamless Flow
+				</h3>
+				<div class="card p-8">
+					<p class="text-center text-gray-600 mb-8">
+						The protocol allows users to deposit various forms of synthetic BTC
+						(`alloyedBTC*`) to mint a single, fungible `alloyedBTC` token. This
+						token can then be used across the ecosystem or redeemed for any of
+						the underlying assets available in the pool, creating a unified
+						liquidity layer.
+					</p>
+					<div
+						class="flex flex-col md:flex-row items-center justify-between space-y-8 md:space-y-0 md:space-x-4"
+					>
+						<div class="flex flex-col items-center text-center w-full md:w-1/4">
+							<div class="p-4 bg-gray-100 rounded-lg w-full">
+								<span class="font-bold text-gray-800">User Deposits</span>
+								<div class="mt-2 text-sm text-gray-600">nBTC, lBTC, etc.</div>
+							</div>
+						</div>
+						<div
+							class="text-4xl font-thin text-gray-400 transform rotate-90 md:rotate-0"
+						>
+							→
+						</div>
+						<div class="flex flex-col items-center text-center w-full md:w-2/4">
+							<div
+								class="p-6 bg-blue-100 border-2 border-dashed border-blue-300 rounded-lg w-full"
+							>
+								<h4 class="text-lg font-semibold text-blue-900">
+									Liquidity & Minting Pool
+								</h4>
+								<p class="text-sm text-blue-700">
+									Dynamic fees applied based on pool balance. User mints
+									`alloyedBTC`.
+								</p>
+							</div>
+						</div>
+						<div
+							class="text-4xl font-thin text-gray-400 transform rotate-90 md:rotate-0"
+						>
+							⇄
+						</div>
+						<div class="flex flex-col items-center text-center w-full md:w-1/4">
+							<div class="p-4 bg-yellow-100 rounded-lg w-full">
+								<span class="font-bold text-yellow-800">Unified Asset</span>
+								<div class="mt-2 text-sm text-yellow-700">alloyedBTC</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<section id="simulator" class="mb-20">
+				<h3 class="text-3xl font-bold text-center text-gray-900 mb-4">
+					Dynamic Fee Simulator
+				</h3>
+				<p class="text-center text-gray-600 mb-12 max-w-3xl mx-auto">
+					This is the core of the protocol's balancing mechanism. The fees for
+					depositing or withdrawing an asset change dynamically based on how its
+					current supply compares to its target supply. Use the simulator below
+					to see how your transaction would affect the pool and what fee you
+					would incur.
+				</p>
+
+				<div class="card p-6 md:p-8">
+					<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+						<div class="lg:col-span-2">
+							<h4 class="font-semibold text-lg text-gray-800 mb-4">
+								Pool Composition (Current vs. Target)
+							</h4>
+							<div class="chart-container">
+								<canvas id="poolChart"></canvas>
+							</div>
+						</div>
+						<div class="space-y-6">
+							<h4 class="font-semibold text-lg text-gray-800 mb-4">
+								Simulate a Transaction
+							</h4>
+							<div>
+								<label
+									for="asset"
+									class="block text-sm font-medium text-gray-700"
+									>Asset</label
+								>
+								<select
+									id="asset"
+									name="asset"
+									class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
+								>
+									<option value="0">nBTC</option>
+									<option value="1">lBTC</option>
+									<option value="2">tBTC</option>
+								</select>
+							</div>
+							<div>
+								<label
+									for="action"
+									class="block text-sm font-medium text-gray-700"
+									>Action</label
+								>
+								<select
+									id="action"
+									name="action"
+									class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
+								>
+									<option value="deposit">Deposit</option>
+									<option value="withdraw">Withdraw</option>
+								</select>
+							</div>
+							<div>
+								<label
+									for="amount"
+									class="block text-sm font-medium text-gray-700"
+									>Amount</label
+								>
+								<input
+									type="number"
+									name="amount"
+									id="amount"
+									value="10"
+									class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+								/>
+							</div>
+							<div class="flex space-x-4">
+								<button
+									id="simulateBtn"
+									class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white btn-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+								>
+									Calculate Fee
+								</button>
+								<button
+									id="resetBtn"
+									class="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+								>
+									Reset
+								</button>
+							</div>
+							<div
+								id="results"
+								class="mt-6 p-4 bg-gray-50 rounded-lg space-y-3 hidden"
+							>
+								<div>
+									<p class="text-sm font-medium text-gray-500">Asset Status</p>
+									<p id="assetStatus" class="text-lg font-bold"></p>
+								</div>
+								<div>
+									<p class="text-sm font-medium text-gray-500">
+										Calculated Fee Rate
+									</p>
+									<p id="feeResult" class="text-lg font-bold text-blue-600"></p>
+								</div>
+								<div>
+									<p class="text-sm font-medium text-gray-500">
+										Net Amount (Minted/Received)
+									</p>
+									<p id="netAmount" class="text-lg font-bold text-gray-800"></p>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<section id="framework" class="mb-20">
+				<h3 class="text-3xl font-bold text-center text-gray-900 mb-12">
+					Mathematical Framework
+				</h3>
+				<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+					<div class="card p-6">
+						<h4 class="font-semibold text-lg text-gray-800 mb-4">
+							Deviation Factor (dᵢ)
+						</h4>
+						<p class="text-gray-600 mb-4">
+							This value measures how far an asset's current supply ratio (Cᵢ)
+							is from its target (Tᵢ). A positive value means it's oversupplied;
+							negative means undersupplied.
+						</p>
+						<div class="formula-card">dᵢ = (Cᵢ - Tᵢ) / Tᵢ</div>
+					</div>
+					<div class="card p-6">
+						<h4 class="font-semibold text-lg text-gray-800 mb-4">
+							Fee Functions
+						</h4>
+						<p class="text-gray-600 mb-4">
+							The protocol uses piecewise linear functions to calculate fees,
+							bounded by min, balanced, and max fee parameters. The fee changes
+							based on the deviation factor.
+						</p>
+						<div class="formula-card">
+							f(dᵢ) = balanced ± dᵢ × (bound - balanced)
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<section id="components" class="text-center">
+				<h3 class="text-3xl font-bold text-gray-900 mb-12">
+					Supporting Protocol Components
+				</h3>
+				<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+					<div class="card p-6">
+						<h4 class="font-semibold text-lg text-gray-800 mb-2">
+							Reserve Pool
+						</h4>
+						<p class="text-gray-600">
+							A portion of every fee is sent to the protocol reserves. This pool
+							acts as a liquidity buffer during high volatility and can provide
+							capital for yield generation.
+						</p>
+					</div>
+					<div class="card p-6">
+						<h4 class="font-semibold text-lg text-gray-800 mb-2">
+							Yield Generation
+						</h4>
+						<p class="text-gray-600">
+							To enhance capital efficiency, a portion of the assets can be
+							deployed to external money markets to generate yield, which can be
+							distributed back to `alloyedBTC` holders.
+						</p>
+					</div>
+					<div class="card p-6">
+						<h4 class="font-semibold text-lg text-gray-800 mb-2">
+							Risk Committee
+						</h4>
+						<p class="text-gray-600">
+							A dedicated committee is responsible for managing the registry
+							parameters for each asset, such as target ratios and fee bounds,
+							ensuring the protocol's stability and security.
+						</p>
+					</div>
+				</div>
+			</section>
+		</main>
+
+		<footer class="bg-white mt-20 border-t">
+			<div class="container mx-auto px-6 py-6 text-center text-gray-500">
+				<p>
+					&copy; 2025 Alloyed BTC Protocol Analysis. For illustrative purposes
+					only.
+				</p>
+			</div>
+		</footer>
+
+		<script>
+			document.addEventListener("DOMContentLoaded", function () {
+				const ASSET_LABELS = ["nBTC", "lBTC", "tBTC"];
+				const INITIAL_STATE = {
+					supplies: [350, 200, 450],
+					targets: [0.3, 0.25, 0.45],
+					params: [
+						{ min_fee: 0.001, balanced_fee: 0.003, max_fee: 0.01 }, // nBTC
+						{ min_fee: 0.001, balanced_fee: 0.003, max_fee: 0.01 }, // lBTC
+						{ min_fee: 0.001, balanced_fee: 0.003, max_fee: 0.01 }, // tBTC
+					],
+				};
+
+				let currentState = JSON.parse(JSON.stringify(INITIAL_STATE));
+				let chart;
+
+				const ctx = document.getElementById("poolChart").getContext("2d");
+
+				function createChart() {
+					if (chart) {
+						chart.destroy();
+					}
+					const totalTarget = currentState.supplies.reduce(
+						(sum, s) => sum + s,
+						0,
+					);
+
+					chart = new Chart(ctx, {
+						type: "bar",
+						data: {
+							labels: ASSET_LABELS,
+							datasets: [
+								{
+									label: "Current Supply",
+									data: currentState.supplies,
+									backgroundColor: "#4A5568",
+									borderRadius: 4,
+								},
+								{
+									label: "Target Supply",
+									data: currentState.targets.map((t) => t * totalTarget),
+									backgroundColor: "#EAECEF",
+									borderRadius: 4,
+								},
+							],
+						},
+						options: {
+							responsive: true,
+							maintainAspectRatio: false,
+							scales: {
+								y: {
+									beginAtZero: true,
+									grid: {
+										drawBorder: false,
+									},
+								},
+								x: {
+									grid: {
+										display: false,
+									},
+								},
+							},
+							plugins: {
+								legend: {
+									position: "top",
+								},
+								tooltip: {
+									callbacks: {
+										label: function (context) {
+											let label = context.dataset.label || "";
+											if (label) {
+												label += ": ";
+											}
+											if (context.parsed.y !== null) {
+												label += context.parsed.y.toFixed(2) + " BTC";
+											}
+											return label;
+										},
+									},
+								},
+							},
+						},
+					});
+				}
+
+				function calculateFee(assetIndex, action, amount) {
+					const supplies = currentState.supplies;
+					const targets = currentState.targets;
+					const params = currentState.params[assetIndex];
+
+					const total_supply = supplies.reduce((a, b) => a + b, 0);
+					if (total_supply === 0)
+						return {
+							feeRate: params.balanced_fee,
+							status: "Balanced",
+							netAmount: amount * (1 - params.balanced_fee),
+						};
+
+					const current_ratio = supplies[assetIndex] / total_supply;
+					const target_ratio = targets[assetIndex];
+
+					const deviation = (current_ratio - target_ratio) / target_ratio;
+
+					let feeRate;
+
+					if (action === "deposit") {
+						if (deviation >= 1) feeRate = params.max_fee;
+						else if (deviation > 0)
+							feeRate =
+								params.balanced_fee +
+								deviation * (params.max_fee - params.balanced_fee);
+						else if (deviation > -1)
+							feeRate =
+								params.balanced_fee +
+								deviation * (params.balanced_fee - params.min_fee);
+						else feeRate = params.min_fee;
+					} else {
+						// withdraw
+						if (deviation >= 1) feeRate = params.min_fee;
+						else if (deviation > 0)
+							feeRate =
+								params.balanced_fee -
+								deviation * (params.balanced_fee - params.min_fee);
+						else if (deviation > -1)
+							feeRate =
+								params.balanced_fee -
+								deviation * (params.max_fee - params.balanced_fee);
+						else feeRate = params.max_fee;
+					}
+
+					const netAmount = amount * (1 - feeRate);
+
+					let status;
+					if (deviation > 0.05) status = "Oversupplied";
+					else if (deviation < -0.05) status = "Undersupplied";
+					else status = "Balanced";
+
+					return { feeRate: Math.max(0, feeRate), status, netAmount };
+				}
+
+				const simulateBtn = document.getElementById("simulateBtn");
+				const resetBtn = document.getElementById("resetBtn");
+
+				simulateBtn.addEventListener("click", () => {
+					const assetIndex = parseInt(document.getElementById("asset").value);
+					const action = document.getElementById("action").value;
+					const amount = parseFloat(document.getElementById("amount").value);
+
+					if (isNaN(amount) || amount <= 0) {
+						alert("Please enter a valid amount.");
+						return;
+					}
+
+					if (
+						action === "withdraw" &&
+						amount > currentState.supplies[assetIndex]
+					) {
+						alert("Withdrawal amount exceeds available supply.");
+						return;
+					}
+
+					const result = calculateFee(assetIndex, action, amount);
+
+					document.getElementById("feeResult").textContent =
+						`${(result.feeRate * 100).toFixed(4)}%`;
+					document.getElementById("assetStatus").textContent = result.status;
+					document.getElementById("netAmount").textContent =
+						`${result.netAmount.toFixed(4)} ${ASSET_LABELS[assetIndex]}`;
+					document.getElementById("results").classList.remove("hidden");
+
+					const tempState = JSON.parse(JSON.stringify(currentState));
+					if (action === "deposit") {
+						tempState.supplies[assetIndex] += amount;
+					} else {
+						tempState.supplies[assetIndex] -= amount;
+					}
+
+					const totalTarget = tempState.supplies.reduce((sum, s) => sum + s, 0);
+					chart.data.datasets[0].data = tempState.supplies;
+					chart.data.datasets[1].data = tempState.targets.map(
+						(t) => t * totalTarget,
+					);
+					chart.update();
+				});
+
+				resetBtn.addEventListener("click", () => {
+					currentState = JSON.parse(JSON.stringify(INITIAL_STATE));
+					document.getElementById("results").classList.add("hidden");
+					document.getElementById("amount").value = 10;
+					createChart();
+				});
+
+				document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+					anchor.addEventListener("click", function (e) {
+						e.preventDefault();
+						document.querySelector(this.getAttribute("href")).scrollIntoView({
+							behavior: "smooth",
+						});
+					});
+				});
+
+				createChart();
+			});
+		</script>
+	</body>
+</html>
