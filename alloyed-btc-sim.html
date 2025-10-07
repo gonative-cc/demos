@@ -26,10 +26,13 @@
 				background-color: #f5f7fa;
 				color: #4a5568;
 			}
+			.container {
+				max-width: 700px;
+			}
 			.chart-container {
 				position: relative;
 				width: 100%;
-				max-width: 800px;
+				max-width: 700px;
 				margin-left: auto;
 				margin-right: auto;
 				height: 300px;
@@ -68,14 +71,42 @@
 				border-radius: 0.5rem;
 				overflow-x: auto;
 			}
+			code {
+				padding: 0.3rem;
+			}
 		</style>
 	</head>
 	<body class="antialiased">
 		<header class="bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
 			<nav
-				class="container mx-auto px-6 py-4 flex justify-between items-center"
+				class="max-w-[850px] mx-auto px-6 py-4 flex justify-between items-center relative"
 			>
-				<h1 class="text-xl font-bold text-gray-800">Alloyed BTC Protocol</h1>
+				<img src="./logos/native.svg" width="100px" />
+
+				<!-- Hamburger Button -->
+				<div class="md:hidden">
+					<button
+						id="menu-btn"
+						type="button"
+						class="z-40 block text-gray-800 hover:text-yellow-500 focus:text-yellow-500 focus:outline-none"
+					>
+						<span class="sr-only">Open main menu</span>
+						<span
+							id="icon-top"
+							class="block w-6 h-0.5 bg-current transform transition duration-500 ease-in-out"
+						></span>
+						<span
+							id="icon-middle"
+							class="block w-6 h-0.5 bg-current mt-1.5 transform transition duration-500 ease-in-out"
+						></span>
+						<span
+							id="icon-bottom"
+							class="block w-6 h-0.5 bg-current mt-1.5 transform transition duration-500 ease-in-out"
+						></span>
+					</button>
+				</div>
+
+				<!-- Desktop Menu -->
 				<div class="hidden md:flex items-center space-x-8">
 					<a href="#introduction" class="nav-link text-gray-600 font-medium"
 						>Introduction</a
@@ -90,34 +121,92 @@
 						>Components</a
 					>
 				</div>
+
+				<!-- Mobile Menu -->
+				<div
+					id="mobile-menu"
+					class="md:hidden hidden absolute top-full left-0 right-0 bg-white shadow-lg"
+				>
+					<div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 text-center">
+						<a
+							href="#introduction"
+							class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-yellow-600 hover:bg-gray-50"
+							>Introduction</a
+						>
+						<a
+							href="#simulator"
+							class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-yellow-600 hover:bg-gray-50"
+							>Simulator</a
+						>
+						<a
+							href="#framework"
+							class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-yellow-600 hover:bg-gray-50"
+							>Framework</a
+						>
+						<a
+							href="#components"
+							class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-yellow-600 hover:bg-gray-50"
+							>Components</a
+						>
+					</div>
+				</div>
 			</nav>
 		</header>
 
-		<main class="container mx-auto px-6 py-12">
-			<section id="introduction" class="text-center mb-20">
-				<h2 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4">
-					Unifying Bitcoin Liquidity on Sui
+		<main class="container max-w-[850px] mx-auto px-6 py-8">
+			<section id="introduction" class="text-center mb-12">
+				<h1 class="text-4xl font-bold text-gray-900">Alloyed BTC Protocol</h1>
+				<h3 class="text-2xl font-bold text-gray-600 my-3">
+					Empowering Sui with Unified BTC Liquidity
+				</h3>
+				<h2 class="text-3xl font-bold text-center text-gray-900 my-6">
+					Abstract
 				</h2>
-				<p class="max-w-3xl mx-auto text-lg text-gray-600">
-					The Alloyed BTC protocol is designed to solve BTC liquidity
-					fragmentation by consolidating multiple synthetic Bitcoin tokens into
-					a single, unified asset. This interactive application explains the
-					core mechanics that power the protocol, focusing on its dynamic fee
-					structure used to maintain a balanced and healthy liquidity pool.
-				</p>
+				<div
+					class="max-w-2xl mx-auto text-lg text-gray-600"
+					style="text-align: justify"
+				>
+					<p class="my-3">
+						Native's <code>alloyedBTC</code> (Alloyed BTC) is a foundational
+						DeFi primitive designed to solve the critical problem of liquidity
+						fragmentation for synthetic Bitcoin (BTC) assets in the Sui
+						blockchain. By creating a single, unified, and value-backed index
+						token, <code>alloyedBTC</code> aggregates various BTC synthetic
+						tokens (such as okxBTC, lBTC, etc.) into one deep, decentralized
+						liquidity pool. The protocol employs a sophisticated dynamic fee
+						model to incentivize pool balance and a robust reserve mechanism to
+						ensure stability and solvency. Furthermore, by deploying a portion
+						of its assets into lending protocols,
+						<code>alloyedBTC</code> becomes a native yield-bearing asset.
+					</p>
+					<p class="my-3">
+						User can deposit any constituent of the Alloyed BTC Index, to
+						receive <code>alloyedBTC</code> tokens, keeping the decentralized
+						ethos. This design not only consolidates liquidity and simplifies
+						the user experience but also enhances capital efficiency and
+						establishes a reliable BTC base asset for the entire Sui DeFi
+						ecosystem.
+					</p>
+
+					<p class="my-3">
+						This interactive application explains the core mechanics that power
+						the protocol, focusing on its dynamic fee structure used to maintain
+						a balanced and healthy liquidity pool.
+					</p>
+				</div>
 			</section>
 
-			<section id="concept" class="mb-20">
+			<section id="concept" class="mb-12">
 				<h3 class="text-3xl font-bold text-center text-gray-900 mb-12">
 					The Core Concept: A Seamless Flow
 				</h3>
 				<div class="card p-8">
 					<p class="text-center text-gray-600 mb-8">
 						The protocol allows users to deposit various forms of synthetic BTC
-						(`alloyedBTC*`) to mint a single, fungible `alloyedBTC` token. This
-						token can then be used across the ecosystem or redeemed for any of
-						the underlying assets available in the pool, creating a unified
-						liquidity layer.
+						(<code>alloyedBTC*</code>) to mint a single, fungible
+						<code>alloyedBTC</code> token. This token can then be used across
+						the ecosystem or redeemed for any of the underlying assets available
+						in the pool, creating a unified liquidity layer.
 					</p>
 					<div
 						class="flex flex-col md:flex-row items-center justify-between space-y-8 md:space-y-0 md:space-x-4"
@@ -142,7 +231,7 @@
 								</h4>
 								<p class="text-sm text-blue-700">
 									Dynamic fees applied based on pool balance. User mints
-									`alloyedBTC`.
+									<code>alloyedBTC</code>.
 								</p>
 							</div>
 						</div>
@@ -161,7 +250,7 @@
 				</div>
 			</section>
 
-			<section id="simulator" class="mb-20">
+			<section id="simulator" class="mb-12">
 				<h3 class="text-3xl font-bold text-center text-gray-900 mb-4">
 					Dynamic Fee Simulator
 				</h3>
@@ -326,7 +415,7 @@
 						<p class="text-gray-600">
 							To enhance capital efficiency, a portion of the assets can be
 							deployed to external money markets to generate yield, which can be
-							distributed back to `alloyedBTC` holders.
+							distributed back to <code>alloyedBTC</code> holders.
 						</p>
 					</div>
 					<div class="card p-6">
@@ -550,6 +639,33 @@
 						document.querySelector(this.getAttribute("href")).scrollIntoView({
 							behavior: "smooth",
 						});
+					});
+				});
+
+				// Mobile menu logic
+				const menuBtn = document.getElementById("menu-btn");
+				const mobileMenu = document.getElementById("mobile-menu");
+				const mobileMenuLinks = document.querySelectorAll("#mobile-menu a");
+				const iconTop = document.getElementById("icon-top");
+				const iconMiddle = document.getElementById("icon-middle");
+				const iconBottom = document.getElementById("icon-bottom");
+
+				menuBtn.addEventListener("click", () => {
+					mobileMenu.classList.toggle("hidden");
+					iconTop.classList.toggle("rotate-45");
+					iconTop.classList.toggle("translate-y-2");
+					iconMiddle.classList.toggle("opacity-0");
+					iconBottom.classList.toggle("-rotate-45");
+					iconBottom.classList.toggle("-translate-y-2");
+				});
+
+				mobileMenuLinks.forEach((link) => {
+					link.addEventListener("click", () => {
+						mobileMenu.classList.add("hidden");
+						// Reset icon on link click
+						iconTop.classList.remove("rotate-45", "translate-y-2");
+						iconMiddle.classList.remove("opacity-0");
+						iconBottom.classList.remove("-rotate-45", "-translate-y-2");
 					});
 				});
 
